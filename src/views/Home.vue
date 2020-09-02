@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-      <div>恩启项目公共组件</div>
+      <div>恩启项目公共组件1111</div>
       <el-button type="primary" @click="goAxios">axios组件示例</el-button>
       <el-button type="primary" @click="goBuild">预渲染打包文档</el-button>
   </div>
