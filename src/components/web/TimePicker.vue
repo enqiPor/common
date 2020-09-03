@@ -35,18 +35,18 @@
 
 <script>
 	// 调用组件传参
-	//timeType:{
-	 // start:'00:00',
-	 // step:'00:30',
+	// timeType:{
+	//  start:'00:00',
+	//  step:'00:30',
 	// 	end:'23:00'
 	// }
 	export default{
 		props:["timeType"],
 		data() {
 		  return {
-			value: '', 
-			//startTime: '',
-			//endTime: ''
+			value: '',
+			startTime: '',
+			endTime: ''
 		  };
 		}
 	}

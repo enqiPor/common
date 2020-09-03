@@ -20,9 +20,34 @@ Vue.use(VueRouter);
       component: () => import('../components/module/Axios')
     },
     {
-      path: '/build',
-      name: 'Build',
-      component: () => import('../components/module/Axios')
+      path: '/upvideo',
+      name: 'Upvideo',
+      component: () => import('../components/web/Upvideo')
+    },
+    {
+      path: '/upimage',
+      name: 'UpImage',
+      component: () => import('../components/web/UpImage')
+    },
+    {
+      path: '/timepicker',
+      name: 'TimePicker',
+      component: () => import('../components/web/TimePicker')
+    },
+    {
+      path: '/select',
+      name: 'Select',
+      component: () => import('../components/web/Select')
+    },
+    {
+      path: '/page',
+      name: 'Pagination',
+      component: () => import('../components/web/Pagination')
+    },
+    {
+      path: '/datepicker',
+      name: 'DatePicker',
+      component: () => import('../components/web/DatePicker')
     }
 ];
 
