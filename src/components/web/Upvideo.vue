@@ -2,16 +2,26 @@
   <div class="container">
 	<!-- 视频上传阿里云s -->
 	<div class="up-video">
-		上传视频
+		<div v-show="uploadStart">上传视频</div>
         <input type="file" id="fileUpload" @change="fileChange($event)">
+		<!-- 上传加载进度s -->
 		<div class="upload-style" v-show="uploadType">
-			<el-progress type="circle" :percentage="authProgress" :width="60" :stroke-width="3"></el-progress>
+			<el-progress :percentage="authProgress" :format="format"></el-progress>
 		</div>
+		<!-- 上传加载进度e -->
+		<!-- 上传完成后展示video首图s -->
+		<div class="play-btn" v-show="upSuccess">
+			<p :data-videoid='videoId' @click="palyVideo($event)"><i class="el-icon-video-play"></i></p>
+			<img :src="coverURL" alt="">
+		</div>
+		<!-- 上传完成后展示video首图e -->
+	</div>
+	<div id="video_play">
+		
 	</div>
   </div>
 </template>
 <script>
-	import axios from "axios";
 	//上传视频需要引用阿里云3个js文件
   export default {
     data () {
@@ -30,7 +40,11 @@
         pauseDisabled: true,
         uploader: null,
         statusText: '',
-		uploadType:false
+		uploadType:false,
+		upSuccess:false,
+		uploadStart:true,
+		videoId:'',
+		coverURL:''
       }
     },
 	mounted() {
@@ -107,29 +121,47 @@
             // 注意: 这里是测试 demo 所以直接调用了获取 UploadAuth 的测试接口, 用户在使用时需要判断 uploadInfo.videoId 存在与否从而调用 openApi
             // 如果 uploadInfo.videoId 存在, 调用 刷新视频上传凭证接口(https://help.aliyun.com/document_detail/55408.html)
             // 如果 uploadInfo.videoId 不存在,调用 获取视频上传地址和凭证接口(https://help.aliyun.com/document_detail/55407.html)
+			console.log(uploadInfo)
             if (!uploadInfo.videoId) {
-              let createUrl = 'https://demo-vod.cn-shanghai.aliyuncs.com/voddemo/CreateUploadVideo?Title=testvod1&FileName=aa.mp4&BusinessType=vodai&TerminalType=pc&DeviceModel=iPhone9,2&UUID=59ECA-4193-4695-94DD-7E1247288&AppVersion=1.0.0&VideoId=5bfcc7864fc14b96972842172207c9e6'
-              axios.get(createUrl).then(({data}) => {
-                let uploadAuth = data.UploadAuth
-                let uploadAddress = data.UploadAddress
-                let videoId = data.VideoId
+              let createUrl = '/common/fileupload/createUploadVideo.do?filename='+uploadInfo.file.name+"&filesize="+uploadInfo.file.size
+              self.$axios.get(createUrl).then(({data}) => {
+				  console.log(data.data.UploadAuth)
+                let uploadAuth = data.data.UploadAuth
+                let uploadAddress = data.data.UploadAddress
+                let videoId = data.data.VideoId
                 uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)                
               })
             } else {
               // 如果videoId有值，根据videoId刷新上传凭证
               // https://help.aliyun.com/document_detail/55408.html?spm=a2c4g.11186623.6.630.BoYYcY
-              let refreshUrl = 'https://demo-vod.cn-shanghai.aliyuncs.com/voddemo/RefreshUploadVideo?BusinessType=vodai&TerminalType=pc&DeviceModel=iPhone9,2&UUID=59ECA-4193-4695-94DD-7E1247288&AppVersion=1.0.0&Title=haha1&FileName=xxx.mp4&VideoId=' + uploadInfo.videoId
-              axios.get(refreshUrl).then(({data}) => {
-                let uploadAuth = data.UploadAuth
-                let uploadAddress = data.UploadAddress
-                let videoId = data.VideoId
+              let refreshUrl = '/common/fileupload/createUploadVideo.do?filename='+uploadInfo.file.name+"&filesize="+uploadInfo.file.size
+              self.$axios.get(refreshUrl).then(({data}) => {
+                let uploadAuth = data.data.UploadAuth
+                let uploadAddress = data.data.UploadAddress
+                let videoId = data.data.VideoId
                 uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
               })
             }
           },
           // 文件上传成功
           onUploadSucceed: function (uploadInfo) {
-			self.uploadType=false;
+			  console.log(uploadInfo)
+			  let getVideoPlayAuth=function(){
+				  self.$axios.get('/common/fileupload/getVideoPlayAuth.do?videoId='+uploadInfo.videoId).then(({data}) => {
+					if(data.extension == "1"){
+						self.uploadType=false;
+						self.uploadStart=false;
+						self.upSuccess=true;
+						self.videoId=data.data.VideoMeta.videoId;
+						self.coverURL=data.data.VideoMeta.coverURL;
+					}else{
+						setTimeout(function(){
+							getVideoPlayAuth();
+						},5000);
+					}
+				  })
+			  }
+			  getVideoPlayAuth();
           },
           // 文件上传失败
           onUploadFailed: function (uploadInfo, code, message) {
@@ -155,7 +187,7 @@
             // 需要根据 uploadInfo.videoId 调用刷新视频上传凭证接口(https://help.aliyun.com/document_detail/55408.html)重新获取 UploadAuth
             // 然后调用 resumeUploadWithAuth 方法, 这里是测试接口, 所以我直接获取了 UploadAuth
             let refreshUrl = 'https://demo-vod.cn-shanghai.aliyuncs.com/voddemo/RefreshUploadVideo?BusinessType=vodai&TerminalType=pc&DeviceModel=iPhone9,2&UUID=59ECA-4193-4695-94DD-7E1247288&AppVersion=1.0.0&Title=haha1&FileName=xxx.mp4&VideoId=' + uploadInfo.videoId
-            axios.get(refreshUrl).then(({data}) => {
+            self.$axios.get(refreshUrl).then(({data}) => {
               let uploadAuth = data.UploadAuth
               uploader.resumeUploadWithAuth(uploadAuth)
             })
@@ -166,11 +198,97 @@
           },
           // 全部文件上传结束
           onUploadEnd: function (uploadInfo) {
-			self.uploadType=false;
           }
         })
         return uploader
-      }
+      },
+	  format(percentage) {
+		return percentage === 100 ? '视频转码中...' : `${percentage}%`;
+	  },
+	  palyVideo(event){
+		  let el = event.currentTarget;
+		  let thisObj=this;
+		  this.$axios.get('/common/fileupload/getVideoPlayAuth.do?videoId='+el.getAttribute("data-videoid")).then(({data}) => {
+			if(data.extension == "1"){
+				var player = new Aliplayer({
+					id: "video_play",
+					"width": "100%",
+					"height": "100%",
+					"autoplay": true,
+					"isLive": false,
+					"rePlay": false,
+					"playsinline": true,
+					"preload": true,
+					"controlBarVisibility": "hover",
+					"useH5Prism": true,
+					 vid: el.getAttribute("data-videoid"),
+					 playauth :data.data.PlayAuth,
+					 cover:'',
+					"skinLayout": [
+					  {
+						"name": "bigPlayButton",
+						"align": "blabs",
+						"x": 30,
+						"y": 80
+					  },
+					  {
+						"name": "errorDisplay",
+						"align": "tlabs",
+						"x": 0,
+						"y": 0
+					  },
+					  {
+						"name": "infoDisplay"
+					  },
+					  {
+						"name": "tooltip",
+						"align": "blabs",
+						"x": 0,
+						"y": 56
+					  },
+					  {
+						"name": "thumbnail"
+					  },
+					  {
+						"name": "controlBar",
+						"align": "blabs",
+						"x": 0,
+						"y": 0,
+						"children": [
+						  {
+							"name": "progress",
+							"align": "blabs",
+							"x": 0,
+							"y": 44
+						  },
+						  {
+							"name": "playButton",
+							"align": "tl",
+							"x": 15,
+							"y": 12
+						  },
+						  {
+							"name": "timeDisplay",
+							"align": "tl",
+							"x": 10,
+							"y": 5
+						  },
+						  {
+							"name": "fullScreenButton",
+							"align": "tr",
+							"x": 10,
+							"y": 12
+						  }
+						]
+					  }
+					]
+				}, function (player) {
+				});
+			}else{
+				thisObj.$message.error('视频播放失败!');
+			}
+		  })
+	  }
     }
   }
 </script>
@@ -187,7 +305,6 @@
 		div{
 			width: 100%;
 			text-align: center;
-			margin: 0 auto;
 		}
 		p{
 			margin-block-start: 0em;
@@ -196,6 +313,8 @@
 	}
 	.el-progress__text{
 		color: #fff!important;
+		margin-left: 0!important;
+		margin-top: 5px;
 	}
 	.upload-style,.up-video{
 		display: flex;
@@ -213,7 +332,7 @@
 	}
 	.up-video{
 		position: relative;
-		width: 150px;
+		width: 170px;
 		height: 150px;
 		border: 1px dashed #d9d9d9;
 		font-size: 14px;
@@ -231,5 +350,61 @@
 		cursor: pointer;
 		z-index: 1;
 		opacity: 0;
+	}
+	.play-btn{
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,.3);
+		display: flex;
+		-webkit-display: flex;
+		-moz-display: flex;
+		-o-display: flex;
+		align-items: center;
+		-webkit-align-items: center;
+		-moz-align-items: center;
+		-o-align-items: center;
+		justify-content: center;
+		-webkit-justify-content: center;
+		-moz-justify-content: center;
+		-o-justify-content: center;
+		overflow: hidden;
+		z-index: 2;
+		p{
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			margin: 0!important;
+			display: flex;
+			-webkit-display: flex;
+			-moz-display: flex;
+			-o-display: flex;
+			align-items: center;
+			-webkit-align-items: center;
+			-moz-align-items: center;
+			-o-align-items: center;
+			justify-content: center;
+			-webkit-justify-content: center;
+			-moz-justify-content: center;
+			-o-justify-content: center;
+		}
+		img{
+			max-width: 100%;
+			height: 100%;
+		}
+	}
+	.el-icon-video-play{
+		font-size: 36px;
+		cursor: pointer;
+	}
+	#video_play{
+		width: 300px!important;
+		height: 200px!important;
+		border: 1px solid red;
+		position: relative;
 	}
 </style>

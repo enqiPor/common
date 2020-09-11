@@ -18,6 +18,10 @@ Vue.use(VueRouter);
       path: '/axios',
       name: 'Axios',
       component: () => import('../components/module/Axios')
+    },{
+      path: '/addressselector',
+      name: 'AddressSelector',
+      component: () => import('../components/web/AddressSelector')
     },
     {
       path: '/upvideo',
@@ -50,7 +54,6 @@ Vue.use(VueRouter);
       component: () => import('../components/web/DatePicker')
     }
 ];
-
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,

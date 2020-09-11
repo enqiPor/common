@@ -9,6 +9,7 @@ import axios from 'axios';
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;
+axios.defaults.baseURL = '/api'
 new Vue({
   router,
   store,
