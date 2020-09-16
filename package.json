@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-	"build": "vue-cli-service build",
-	"test": "vue-cli-service build --mode test",
-	"lint": "vue-cli-service lint"
+    "build": "vue-cli-service build",
+    "test": "vue-cli-service build --mode test",
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "axios": "^0.20.0",
     "core-js": "3.6.4",
     "element-ui": "^2.13.2",
+    "vant": "^2.10.6",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"

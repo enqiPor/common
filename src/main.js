@@ -6,6 +6,14 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios';
 
+//引用wantUI
+import 'vant/lib/index.css';
+import { Popup} from 'vant';
+import { Area } from 'vant';
+Vue.use(Popup);
+Vue.use(Area);
+//引用wantUI
+
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;

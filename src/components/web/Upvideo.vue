@@ -59,8 +59,8 @@
 		  });
           return
         }
-        var Title = this.file.name
-        var userData = '{"Vod":{}}'
+        const Title = this.file.name
+        const userData = '{"Vod":{}}'
         if (this.uploader) {
           this.uploader.stopUpload()
           this.authProgress = 0
@@ -210,7 +210,7 @@
 		  let thisObj=this;
 		  this.$axios.get('/common/fileupload/getVideoPlayAuth.do?videoId='+el.getAttribute("data-videoid")).then(({data}) => {
 			if(data.extension == "1"){
-				var player = new Aliplayer({
+				let player = new Aliplayer({
 					id: "video_play",
 					"width": "100%",
 					"height": "100%",

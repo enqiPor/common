@@ -12,20 +12,16 @@
           <el-button type="primary" @click="datePicker">日期选择器</el-button>
       </div>
       <div class="home-btn-box">
-
       </div>
-	  <Upvideo></Upvideo>
   </div>
 </template>
 
 <script>
-	import Upvideo from '../components/web/Upvideo.vue'
 export default {
   name: 'Home',
   mounted() {
   },
   components: {
-	  Upvideo
   },
    methods:{
        goAxios() {

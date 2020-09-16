@@ -2,7 +2,7 @@
 	<div class="up-image">
 		<el-upload
 		  class="avatar-uploader"
-		  action="https://jsonplaceholder.typicode.com/posts/"
+		  action="/fileupload/upload/doUploadTest.do"
 		  :show-file-list="false"
 		  :on-success="handleAvatarSuccess"
 		  :before-upload="beforeAvatarUpload">
