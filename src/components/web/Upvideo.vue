@@ -50,99 +50,6 @@ export default {
     },
     mounted() {},
     methods: {
-<<<<<<< HEAD
-      fileChange (e) {
-        this.file = e.target.files[0]
-        if (!this.file) {
-		  this.$message({
-			message: '请先选择需要上传的视频!',
-			type: 'warning'
-		  });
-          return
-        }
-        const Title = this.file.name
-        const userData = '{"Vod":{}}'
-        if (this.uploader) {
-          this.uploader.stopUpload()
-          this.authProgress = 0
-          this.statusText = ""
-        }
-        this.uploader = this.createUploader()
-        this.uploader.addFile(this.file, null, null, null, userData)
-        this.uploadDisabled = false
-        this.pauseDisabled = true
-        this.resumeDisabled = true
-      },
-      authUpload () {
-        // 然后调用 startUpload 方法, 开始上传
-        if (this.uploader !== null) {
-          this.uploader.startUpload()
-          this.uploadDisabled = true
-          this.pauseDisabled = false
-        }
-      },
-      // 暂停上传
-      pauseUpload () {
-        if (this.uploader !== null) {
-          this.uploader.stopUpload()
-          this.resumeDisabled = false
-          this.pauseDisabled = true
-        }
-      },
-      // 恢复上传
-      resumeUpload () {
-        if (this.uploader !== null) {
-          this.uploader.startUpload()
-          this.resumeDisabled = true
-          this.pauseDisabled = false
-        }
-      },
-      createUploader (type) {
-        let self = this
-        let uploader = new AliyunUpload.Vod({
-          timeout: self.timeout || 60000,
-          partSize: self.partSize || 1048576,
-          parallel: self.parallel || 5,
-          retryCount: self.retryCount || 3,
-          retryDuration: self.retryDuration || 2,
-          region: self.region,
-          userId: self.userId,
-          // 添加文件成功
-          addFileSuccess: function (uploadInfo) {
-            self.uploader.startUpload()
-            self.uploadDisabled = true;
-            self.pauseDisabled = false;
-			self.uploadType=true;
-          },
-          // 开始上传
-          onUploadstarted: function (uploadInfo) {
-            // 如果是 UploadAuth 上传方式, 需要调用 uploader.setUploadAuthAndAddress 方法
-            // 如果是 UploadAuth 上传方式, 需要根据 uploadInfo.videoId是否有值，调用点播的不同接口获取uploadauth和uploadAddress
-            // 如果 uploadInfo.videoId 有值，调用刷新视频上传凭证接口，否则调用创建视频上传凭证接口
-            // 注意: 这里是测试 demo 所以直接调用了获取 UploadAuth 的测试接口, 用户在使用时需要判断 uploadInfo.videoId 存在与否从而调用 openApi
-            // 如果 uploadInfo.videoId 存在, 调用 刷新视频上传凭证接口(https://help.aliyun.com/document_detail/55408.html)
-            // 如果 uploadInfo.videoId 不存在,调用 获取视频上传地址和凭证接口(https://help.aliyun.com/document_detail/55407.html)
-			console.log(uploadInfo)
-            if (!uploadInfo.videoId) {
-              let createUrl = '/common/fileupload/createUploadVideo.do?filename='+uploadInfo.file.name+"&filesize="+uploadInfo.file.size
-              self.$axios.get(createUrl).then(({data}) => {
-				  console.log(data.data.UploadAuth)
-                let uploadAuth = data.data.UploadAuth
-                let uploadAddress = data.data.UploadAddress
-                let videoId = data.data.VideoId
-                uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)                
-              })
-            } else {
-              // 如果videoId有值，根据videoId刷新上传凭证
-              // https://help.aliyun.com/document_detail/55408.html?spm=a2c4g.11186623.6.630.BoYYcY
-              let refreshUrl = '/common/fileupload/createUploadVideo.do?filename='+uploadInfo.file.name+"&filesize="+uploadInfo.file.size
-              self.$axios.get(refreshUrl).then(({data}) => {
-                let uploadAuth = data.data.UploadAuth
-                let uploadAddress = data.data.UploadAddress
-                let videoId = data.data.VideoId
-                uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
-              })
-=======
         fileChange(e) {
             this.file = e.target.files[0]
             if (!this.file) {
@@ -171,7 +78,6 @@ export default {
                 this.uploader.startUpload()
                 this.uploadDisabled = true
                 this.pauseDisabled = false
->>>>>>> 805963d39b22421c25e1feb819b5faaaf782e6c4
             }
         },
         // 暂停上传
@@ -301,106 +207,6 @@ export default {
                 // 全部文件上传结束
                 onUploadEnd: function (uploadInfo) {}
             })
-<<<<<<< HEAD
-			self.$message({
-			  message: '文件超时...',
-			  type: 'warning'
-			});
-          },
-          // 全部文件上传结束
-          onUploadEnd: function (uploadInfo) {
-          }
-        })
-        return uploader
-      },
-	  format(percentage) {
-		return percentage === 100 ? '视频转码中...' : `${percentage}%`;
-	  },
-	  palyVideo(event){
-		  let el = event.currentTarget;
-		  let thisObj=this;
-		  this.$axios.get('/common/fileupload/getVideoPlayAuth.do?videoId='+el.getAttribute("data-videoid")).then(({data}) => {
-			if(data.extension == "1"){
-				let player = new Aliplayer({
-					id: "video_play",
-					"width": "100%",
-					"height": "100%",
-					"autoplay": true,
-					"isLive": false,
-					"rePlay": false,
-					"playsinline": true,
-					"preload": true,
-					"controlBarVisibility": "hover",
-					"useH5Prism": true,
-					 vid: el.getAttribute("data-videoid"),
-					 playauth :data.data.PlayAuth,
-					 cover:'',
-					"skinLayout": [
-					  {
-						"name": "bigPlayButton",
-						"align": "blabs",
-						"x": 30,
-						"y": 80
-					  },
-					  {
-						"name": "errorDisplay",
-						"align": "tlabs",
-						"x": 0,
-						"y": 0
-					  },
-					  {
-						"name": "infoDisplay"
-					  },
-					  {
-						"name": "tooltip",
-						"align": "blabs",
-						"x": 0,
-						"y": 56
-					  },
-					  {
-						"name": "thumbnail"
-					  },
-					  {
-						"name": "controlBar",
-						"align": "blabs",
-						"x": 0,
-						"y": 0,
-						"children": [
-						  {
-							"name": "progress",
-							"align": "blabs",
-							"x": 0,
-							"y": 44
-						  },
-						  {
-							"name": "playButton",
-							"align": "tl",
-							"x": 15,
-							"y": 12
-						  },
-						  {
-							"name": "timeDisplay",
-							"align": "tl",
-							"x": 10,
-							"y": 5
-						  },
-						  {
-							"name": "fullScreenButton",
-							"align": "tr",
-							"x": 10,
-							"y": 12
-						  }
-						]
-					  }
-					]
-				}, function (player) {
-				});
-			}else{
-				thisObj.$message.error('视频播放失败!');
-			}
-		  })
-	  }
-=======
             return uploader
         },
         format(percentage) {
@@ -489,7 +295,6 @@ export default {
                 }
             })
         }
->>>>>>> 805963d39b22421c25e1feb819b5faaaf782e6c4
     }
 }
 </script>

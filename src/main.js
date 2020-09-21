@@ -10,6 +10,11 @@ import axios from 'axios';
 import 'vant/lib/index.css';
 import { Popup} from 'vant';
 import { Area } from 'vant';
+import { DatetimePicker } from 'vant';
+import { Picker } from 'vant';
+
+Vue.use(Picker);
+Vue.use(DatetimePicker);
 Vue.use(Popup);
 Vue.use(Area);
 //引用wantUI

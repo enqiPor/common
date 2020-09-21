@@ -10,21 +10,39 @@
         <el-button type="primary" @click="selectAdd">下拉选择框</el-button>
         <el-button type="primary" @click="pageAdd">分页</el-button>
         <el-button type="primary" @click="datePicker">日期选择器</el-button>
-    </div>
+	 </div>
     <div class="home-btn-box">
         <el-button type="primary" @click="rapidNav">快速导航</el-button>
     </div>
+	<Picker :columnsArr="columnsArr"></Picker>
     <!-- <Upvideo></Upvideo> -->
 </div>
 </template>
 
 <script>
 // import Upvideo from '../components/web/Upvideo.vue'
+import Picker from '../components/wap/Picker.vue'
 export default {
     name: 'Home',
+	data(){
+		return{
+			//1.type为可选值为 date time year-month month-day datehour
+			//2.选项格式化函数 ：选择器是否加年月日，true:加，false:不加
+			//3.min-date 起始时间:'2020,10,1'
+			//4.max-date 最后时间:'2028,10,1'
+			columnsArr:['杭州', '宁波', '温州', '绍兴', '湖州', '嘉兴', '金华', '衢州'],
+			timeType:{
+				type:'datehour',
+				formatterType:false,
+				minDate:'2020,10,1',
+				maxDate:'2028,10,1'
+			}
+		}
+	},
     mounted() {},
     components: {
         // Upvideo
+		Picker
     },
     methods: {
         goAxios() {
