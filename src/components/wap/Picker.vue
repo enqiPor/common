@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<input type="text" class="m-input"   readonly="readonly"  @click="showPopup($event)" placeholder="请选择" name="">
+		<input type="text" class="m-input"   readonly="readonly"  @click="maskType =!maskType" placeholder="请选择" name="">
 		<van-popup  position="bottom"  v-model="maskType">
 			<van-picker
 			  show-toolbar
@@ -8,7 +8,6 @@
 			  @confirm="onConfirm"
 			/>
 		</van-popup>
-		<div>{{totals}}</div>
 	</div>
 </template>
 
@@ -19,6 +18,7 @@
 		data() {
 		    return {
 		      maskType:false,
+			  name:'',
 			  columns: ['杭州', '宁波', '温州', '绍兴', '湖州', '嘉兴', '金华', '衢州'],
 		    };
 		  },
@@ -32,10 +32,6 @@
 			}  
 		  },
 		  methods:{
-			  showPopup(e){
-			  	document.activeElement.blur();
-			  	this.maskType=!this.maskType;
-			  },
 			  onConfirm(value, index) {
 				  alert(value)
 			  	this.maskType=!this.maskType;
@@ -44,5 +40,5 @@
 	}
 </script>
 
-<style>
+<style scoped>
 </style>

@@ -52,6 +52,7 @@ export default {
     methods: {
         fileChange(e) {
             this.file = e.target.files[0]
+			console.log(e.target.files[0])
             if (!this.file) {
                 this.$message({
                     message: '请先选择需要上传的视频!',

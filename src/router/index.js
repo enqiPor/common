@@ -34,13 +34,21 @@ const routes = [{
         path: '/upimage',
         name: 'UpImage',
         component: () =>
-            import ('../components/web/UpImage')
+            import ('../components/web/UpImage'),
+			beforeEnter(to,from,next){
+				next('/SpeedinessNav');
+			}
     },
     {
         path: '/timepicker',
         name: 'TimePicker',
         component: () =>
             import ('../components/web/TimePicker')
+    },
+    {
+        path: '/test',
+        name: 'Test',
+        component: () =>import ('../components/wap/Test')
     },
     {
         path: '/select',

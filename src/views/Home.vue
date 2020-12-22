@@ -16,12 +16,30 @@
     </div>
 	<Picker :columnsArr="columnsArr"></Picker>
     <!-- <Upvideo></Upvideo> -->
+	
+	<div style="swiper-container">
+	    <div class="swiper-container gallery-thumbs">
+	        <div class="swiper-wrapper">
+				<div class="swiper-slide">Slide 1</div>
+				<div class="swiper-slide">Slide 2</div>
+				<div class="swiper-slide">Slide 3</div>
+	        </div>
+	        <!-- Add Arrows -->
+	    </div>
+	    <div class="swiper-button-next swiper-button-next2 swiper-button-white"></div>
+	    <div class="swiper-button-prev swiper-button-prev2 swiper-button-white"></div>
+	</div>
+	<ul>
+		<li v-for="item in list">{{item}}</li>
+	</ul>
 </div>
 </template>
 
 <script>
 // import Upvideo from '../components/web/Upvideo.vue'
 import Picker from '../components/wap/Picker.vue'
+import Swiper from 'swiper'
+import { doLogin } from '@/api/login'
 export default {
     name: 'Home',
 	data(){
@@ -36,10 +54,46 @@ export default {
 				formatterType:false,
 				minDate:'2020,10,1',
 				maxDate:'2028,10,1'
-			}
+			},
+			list:[
+				{id: "0001",name: "1"},
+				{id: "0002",name: "2"},
+				{id: "0003",name: "3"},
+				{id: "0004",name: "4"},
+				{id: "0005",name: "5"}
+			]
 		}
 	},
-    mounted() {},
+    mounted() {
+		doLogin('07831cad989b43c7bbde9545b678017a').then(res => {
+			console.log(res)
+		})
+		this.list.forEach((item,index)=>{
+			this.$delete(item,index);//父元素  要改变的元素  改变成为的值
+		})
+		const mySwiper = new Swiper ('.swiper-container', {
+		    direction: 'horizontal', // 垂直切换选项
+				   autoplay:true,
+		    loop: true, // 循环模式选项
+		    
+		    // 如果需要分页器
+		    pagination: {
+		      el: '.swiper-pagination',
+		    },
+		    
+		    // 如果需要前进后退按钮
+		    navigation: {
+		      nextEl: '.swiper-button-next',
+		      prevEl: '.swiper-button-prev',
+		    },
+		    
+		    // 如果需要滚动条
+		    scrollbar: {
+		      el: '.swiper-scrollbar',
+		    },
+		  })   
+		  
+	},
     components: {
         // Upvideo
 		Picker
@@ -101,6 +155,10 @@ export default {
 </script>
 
 <style lang="scss">
+	.swiper-container {
+	    width: 600px;
+	    height: 300px;
+	} 
 .home {
     width: 76%;
     height: 500px;
